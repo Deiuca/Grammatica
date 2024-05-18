@@ -18,6 +18,8 @@ func _ready():
 	print(generator_seed)
 	
 	inizializza_griglia()
+	applica_regole()
+	print(stringa)
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
@@ -34,7 +36,10 @@ func applica_regole():
 			
 			if daSostituire:
 				for s in regola[3]:
-					applica_sostituzioni(s)
+					applica_sostituzioni(s, indxTrigger)
+			
+			if stringa.length() > 60:
+				break
 			
 			indxTrigger = trova_in_str(regola[1], indxTrigger+1)
 
@@ -52,8 +57,7 @@ func inizializza_griglia():
 			celle.append(cella)
 			add_child(cella)
 
-func applica_sostituzioni(sostituzioni : Array[String], trigger_index := 0):
-	for sost in sostituzioni:
+func applica_sostituzioni(sost : String, trigger_index := 0):
 		var num = ""
 		if sost[0] == "+":
 			sost = sost.left(1)
@@ -66,9 +70,13 @@ func applica_sostituzioni(sostituzioni : Array[String], trigger_index := 0):
 			i += 1
 		num = num.to_int()
 		var index = trigger_index + num
-		if index >= 0 and index < (stringa.length() - sost.length()):
+		if index >= 0 and index < stringa.length():
+			if (index + sost.length()-1) >= stringa.length():
+				for a in range(sost.length()-1):
+					stringa += "X"
 			for p in range(index, index + sost.length()):
-				if sost[p] != "*":
+				
+				if sost[p-index] != "*":
 					stringa[p] = sost[p-index]
 					
 
@@ -90,16 +98,16 @@ func verifica_cond(cond, trigger_index := 0)-> bool:
 		var subDaControllare = stringa.substr(index, index+cond.length())
 		var compatibile = true
 		for c in range(subDaControllare.length()):
-			compatibile &= subDaControllare[c] == cond[c] or cond[c] == "*"
+			compatibile = compatibile and subDaControllare[c] == cond[c] or cond[c] == "*"
 		return compatibile
 	return false
 
 func trova_in_str(daTrovare, offset = 0) -> int : 
-	for i in range(offset, stringa.length, daTrovare.length()):
-		var subCorrente = stringa.substr(i, i+daTrovare.length())
+	for i in range(offset, stringa.length(), daTrovare.length()):
+		var subCorrente = stringa.substr(i, daTrovare.length())
 		var trovata = true
 		for s in range(subCorrente.length()):
-			trovata &= subCorrente[s] == daTrovare[s] or daTrovare[s] == "*"
+			trovata = trovata and (subCorrente[s] == daTrovare[s] or daTrovare[s] == "*")
 		if trovata:
 			return i
 	return -1
