@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://c8hfqyd82ojw5"]
+
+[ext_resource type="Script" path="res://Script/generatore_livello.gd" id="1_8u5le"]
+
+[node name="Generatore Livello" type="Node2D"]
+position = Vector2(1, 0)
+script = ExtResource("1_8u5le")
