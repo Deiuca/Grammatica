@@ -9,7 +9,7 @@ extends Node2D
 var randomGenerator : RandomNumberGenerator = RandomNumberGenerator.new()
 
 var celle = []
-var stringa = "AAAAAAAAAAAAAAAAAAAAT"
+var stringa = "AAAAAAAAAAAAAAAAARAAT"
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -32,7 +32,7 @@ func applica_regole():
 			var daSostituire = true
 			#Cond aggiuntive
 			for cond in regola[2]:
-				daSostituire &= verifica_cond(cond, indxTrigger)
+				daSostituire = daSostituire and verifica_cond(cond, indxTrigger)
 			
 			var correzione_indice = 0
 			if daSostituire:
@@ -107,16 +107,13 @@ func verifica_cond(cond, trigger_index := 0)-> bool:
 		cond = cond.left(1)
 	
 	#ritorna num
-	var i = 0
-	while cond[i].is_valid_int() or cond[i] == "-":
-		num += cond[i] 
-		cond = cond.left(i)
-		i += 1
-	
+	while cond[0].is_valid_int() or cond[0] == "-":
+		num += cond[0] 
+		cond = cond.right(cond.length()-(1))
 	num = num.to_int()
 	var index = trigger_index + num
 	if index >= 0 and index < (stringa.length() - cond.length()):
-		var subDaControllare = stringa.substr(index, index+cond.length())
+		var subDaControllare = stringa.substr(index, cond.length())
 		var compatibile = true
 		for c in range(subDaControllare.length()):
 			compatibile = compatibile and subDaControllare[c] == cond[c] or cond[c] == "*"
