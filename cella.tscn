@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://dd3bfuojtfn5e"]
 
 [ext_resource type="Texture2D" uid="uid://dxujt8eumxvs1" path="res://Textures/aria_debug.png" id="1_2hj1w"]
-[ext_resource type="Script" path="res://cella.gd" id="1_g6mvd"]
+[ext_resource type="Script" path="res://Script/cella.gd" id="1_g6mvd"]
 
 [node name="Cella" type="Sprite2D"]
 texture = ExtResource("1_2hj1w")

@@ -34,14 +34,15 @@ func applica_regole():
 			for cond in regola[2]:
 				daSostituire &= verifica_cond(cond, indxTrigger)
 			
+			var correzione_indice = 0
 			if daSostituire:
-				for s in regola[3]:
-					applica_sostituzioni(s, indxTrigger)
+				applica_sostituzioni(regola[3], indxTrigger)
 			
 			if stringa.length() > 60:
 				break
-			
-			indxTrigger = trova_in_str(regola[1], indxTrigger+1)
+				
+			indxTrigger = -1
+			#indxTrigger = trova_in_str(regola[1], indxTrigger+1+correzione_indice)
 
 func inizializza_griglia():
 	
@@ -57,28 +58,48 @@ func inizializza_griglia():
 			celle.append(cella)
 			add_child(cella)
 
-func applica_sostituzioni(sost : String, trigger_index := 0):
+func applica_sostituzioni(sostituzioni : Array, trigger_index := 0):
+	var newTriggerIndex := trigger_index
+	
+	var correzione = 0
+	if not sostituzioni.size() > 0:
+		return 0
+	for sost in sostituzioni:
 		var num = ""
 		if sost[0] == "+":
-			sost = sost.left(1)
-		
+			sost = sost.left(1)	
 		#ritorna num
-		var i = 0
-		while sost[i].is_valid_int() or sost[i] == "-":
-			num += sost[i] 
-			sost = sost.left(i)
-			i += 1
+		while sost[0].is_valid_int() or sost[0] == "-":
+			num += sost[0] 
+			sost = sost.right(sost.length()-(1))
 		num = num.to_int()
-		var index = trigger_index + num
-		if index >= 0 and index < stringa.length():
-			if (index + sost.length()-1) >= stringa.length():
-				for a in range(sost.length()-1):
-					stringa += "X"
-			for p in range(index, index + sost.length()):
-				
-				if sost[p-index] != "*":
-					stringa[p] = sost[p-index]
-					
+		var indice = trigger_index + num
+		stringa = sostituisci_in_indice(sost, indice)
+		if num<0:
+			correzione += sost.length()
+	
+	return correzione
+
+func sostituisci_in_indice(sostituzione: String, indice: int) -> String:
+	if indice < 0 or indice >= stringa.length():
+		return stringa 
+
+	var risultato = ""
+	var i = 0
+	
+	while i < sostituzione.length():
+		if indice + i < stringa.length() and sostituzione[i] == "*":
+			risultato += stringa[indice + i]
+		else:
+			risultato += sostituzione[i]
+		i += 1
+
+	var prima_dell_indice = stringa.left(indice)
+	var dopo_l_indice = ""
+	if indice + sostituzione.length() < stringa.length():
+		dopo_l_indice = stringa.substr(indice + sostituzione.length(), stringa.length() - (indice + sostituzione.length()))
+	
+	return prima_dell_indice + risultato + dopo_l_indice
 
 func verifica_cond(cond, trigger_index := 0)-> bool:
 	var num = ""
