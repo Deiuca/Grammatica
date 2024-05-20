@@ -1,8 +1,10 @@
-[gd_scene load_steps=2 format=3 uid="uid://cw4nvtebgmf20"]
+[gd_scene load_steps=3 format=3 uid="uid://cw4nvtebgmf20"]
 
 [ext_resource type="PackedScene" uid="uid://c8hfqyd82ojw5" path="res://generatore_livello.tscn" id="1_ehiig"]
+[ext_resource type="Script" path="res://progetto.gd" id="1_vmv75"]
 
 [node name="Progetto" type="Node2D"]
 position = Vector2(1, 0)
+script = ExtResource("1_vmv75")
 
 [node name="Generatore Livello" parent="." instance=ExtResource("1_ehiig")]

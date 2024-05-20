@@ -9,7 +9,7 @@ extends Node2D
 var randomGenerator : RandomNumberGenerator = RandomNumberGenerator.new()
 
 var celle = []
-var stringa = "AAAAAAAAAAAAAAAAARAAT"
+var stringa = "AAAAAAAAAAAAAAAAAAAAT"
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -18,31 +18,41 @@ func _ready():
 	print(generator_seed)
 	
 	inizializza_griglia()
-	applica_regole()
+	while stringa.length() < width*height:
+		applica_regole()
+	print(stringa.length())
+	str_to_grid()
 	print(stringa)
+	
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
 	pass
 
+func str_to_grid():
+	for c in range(celle.size()):
+		if Regole.lettere_to_texture.has(stringa[c]):
+			var texture = Regole.lettere_to_texture[stringa[c]]
+			celle[c].texture = texture
+
 func applica_regole():
 	for regola in Regole.regole:
-		var indxTrigger = trova_in_str(regola[1])
-		while indxTrigger != -1:
-			var daSostituire = true
-			#Cond aggiuntive
-			for cond in regola[2]:
-				daSostituire = daSostituire and verifica_cond(cond, indxTrigger)
-			
-			var correzione_indice = 0
-			if daSostituire:
-				applica_sostituzioni(regola[3], indxTrigger)
-			
-			if stringa.length() > 60:
-				break
+		if randomGenerator.randf_range(0.0, 100.0) <= regola[4]:
+			var indxTrigger = trova_in_str(regola[1])
+			while indxTrigger != -1:
+				var daSostituire = true
+				#Cond aggiuntive
+				for cond in regola[2]:
+					daSostituire = daSostituire and verifica_cond(cond, indxTrigger)
 				
-			indxTrigger = -1
-			#indxTrigger = trova_in_str(regola[1], indxTrigger+1+correzione_indice)
+				var correzione_indice = 0
+				if daSostituire:
+					correzione_indice = applica_sostituzioni(regola[3], indxTrigger)
+				
+				indxTrigger = trova_in_str(regola[1], indxTrigger+1+correzione_indice)
+				
+				if stringa.length() >= width*height:
+					return
 
 func inizializza_griglia():
 	
@@ -59,8 +69,6 @@ func inizializza_griglia():
 			add_child(cella)
 
 func applica_sostituzioni(sostituzioni : Array, trigger_index := 0):
-	var newTriggerIndex := trigger_index
-	
 	var correzione = 0
 	if not sostituzioni.size() > 0:
 		return 0
@@ -74,11 +82,13 @@ func applica_sostituzioni(sostituzioni : Array, trigger_index := 0):
 			sost = sost.right(sost.length()-(1))
 		num = num.to_int()
 		var indice = trigger_index + num
+		while floori((indice / width)) != floori((indice+sost.length()-1) / width):
+			if sost.length() == 0:
+				return 0
+			sost = sost.substr(0, sost.length() - 1)
 		stringa = sostituisci_in_indice(sost, indice)
-		if num<0:
-			correzione += sost.length()
-	
-	return correzione
+		correzione += sost.length()
+	return correzione-1
 
 func sostituisci_in_indice(sostituzione: String, indice: int) -> String:
 	if indice < 0 or indice >= stringa.length():
@@ -95,9 +105,10 @@ func sostituisci_in_indice(sostituzione: String, indice: int) -> String:
 		i += 1
 
 	var prima_dell_indice = stringa.left(indice)
+	var test = stringa.length()
 	var dopo_l_indice = ""
-	if indice + sostituzione.length() < stringa.length():
-		dopo_l_indice = stringa.substr(indice + sostituzione.length(), stringa.length() - (indice + sostituzione.length()))
+	if indice + sostituzione.length()-1 < stringa.length():
+		dopo_l_indice = stringa.substr(indice+1)
 	
 	return prima_dell_indice + risultato + dopo_l_indice
 
