@@ -9,7 +9,7 @@ extends Node2D
 var randomGenerator : RandomNumberGenerator = RandomNumberGenerator.new()
 
 var celle = []
-var stringa = "AAAAAAAAAAAAAAAAAAAAT"
+var stringa = ""
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -18,12 +18,34 @@ func _ready():
 	print(generator_seed)
 	
 	inizializza_griglia()
-	while stringa.length() < width*height:
+	
+	for h in height:
+		for w in width:
+			if h != height-1:
+				stringa += "A"
+			else:
+				stringa += "T"
+
+	var c = 0
+	while c < 1:
 		applica_regole()
+		c+=1
+		
 	print(stringa.length())
 	str_to_grid()
 	print(stringa)
 	
+
+func calcola_str(espressione: String) -> int:
+	var risultato = 0
+	var expr = Expression.new()
+	var error = expr.parse(espressione)
+	if error != OK:
+		print("Errore di parsing: ", error)
+		return risultato
+	else:
+		risultato = expr.execute()
+	return risultato
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
@@ -40,6 +62,7 @@ func applica_regole():
 		var indxTrigger = trova_in_str(regola[1])
 		while indxTrigger != -1:
 			var daSostituire = true
+			
 			#Cond aggiuntive
 			for cond in regola[2]:
 				daSostituire = daSostituire and verifica_cond(cond, indxTrigger)
@@ -50,9 +73,6 @@ func applica_regole():
 					correzione_indice = applica_sostituzioni(regola[3], indxTrigger)
 				
 			indxTrigger = trova_in_str(regola[1], indxTrigger+1+correzione_indice)
-				
-			if stringa.length() >= width*height:
-				return
 
 func inizializza_griglia():
 	
@@ -73,24 +93,26 @@ func applica_sostituzioni(sostituzioni : Array, trigger_index := 0):
 	if not sostituzioni.size() > 0:
 		return 0
 	for sost in sostituzioni:
+		sost = sost.replace("w", str(width))
+		sost = sost.replace("h", str(height))
 		var num = ""
 		if sost[0] == "+":
 			sost = sost.left(1)	
 		#ritorna num
-		while sost[0].is_valid_int() or sost[0] == "-":
+		while sost[0].is_valid_int() or sost[0] == "-" or sost[0] == "+":
 			num += sost[0] 
 			sost = sost.right(sost.length()-(1))
-		num = num.to_int()
+		num = calcola_str(num) if num != "" else 0
 		var indice = trigger_index + num
 		while floori((indice / width)) != floori((indice+sost.length()-1) / width):
 			if sost.length() == 0:
 				return 0
 			sost = sost.substr(0, sost.length() - 1)
-		stringa = sostituisci_in_indice(sost, indice)
+		sostituisci_in_indice(sost, indice)
 		correzione += sost.length()
 	return correzione-1
 
-func sostituisci_in_indice(sostituzione: String, indice: int) -> String:
+func sostituisci_in_indice(sostituzione: String, indice: int):
 	if indice < 0 or indice >= stringa.length():
 		return stringa 
 
@@ -98,32 +120,23 @@ func sostituisci_in_indice(sostituzione: String, indice: int) -> String:
 	var i = 0
 	
 	while i < sostituzione.length():
-		if indice + i < stringa.length() and sostituzione[i] == "*":
-			risultato += stringa[indice + i]
-		else:
-			risultato += sostituzione[i]
+		if sostituzione[i] != "*":
+			stringa[indice + i] = sostituzione[i]
 		i += 1
-
-	var prima_dell_indice = stringa.left(indice)
-	var test = stringa.length()
-	var dopo_l_indice = ""
-	if indice + sostituzione.length()-1 < stringa.length():
-		dopo_l_indice = stringa.substr(indice+1)
-	
-	return prima_dell_indice + risultato + dopo_l_indice
 
 func verifica_cond(cond, trigger_index := 0)-> bool:
 	cond = cond.replace("w", str(width))
 	cond = cond.replace("h", str(height))
+	
 	var num = ""
 	if cond[0] == "+":
 		cond = cond.right(-1)
 	
 	#ritorna num
-	while cond[0].is_valid_int() or cond[0] == "-":
+	while cond[0].is_valid_int() or cond[0] == "-" or cond[0] == "+":
 		num += cond[0] 
 		cond = cond.right(-1)
-	num = num.to_int()
+	num = calcola_str(num) if num != "" else 0
 	var index = trigger_index + num
 	if index >= 0 and index < (stringa.length() - cond.length()):
 		var subDaControllare = stringa.substr(index, cond.length())

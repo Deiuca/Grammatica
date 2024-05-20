@@ -2,13 +2,11 @@ extends Node2D
 
 var regole = [
 	#Nome; Trigger; Condizioni Aggiuntive; Sostituzione; Probabilità (deve essere ultima, modica in applica_regole)
-	#["regola1", "T", [], ["TTT"], 100.0],
-	["test", "A", ["-wP"], ["T"], 100.0],
-	["regola2", "A", ["+wA", "-wA"], ["P"], 2.5],
-	["regola3", "A", [], ["AAA"], 50.0],
-	["regola4", "PA", ["+wA", "-wA"], ["PE"], 40.0],
-	["regola5", "AP", ["+wA", "-wA"], ["eP"], 40.0],
-	["regola6", "P", ["+wA", "-wA", "+1A"], ["PP"], 40.0],
+	["regola1", "T", [], ["TTT"], 100.0],
+	["regola2", "A", ["+wA", "-wA","-w+1A", "+w+1A", "-w-1A", "+w-1A"], ["P"], 2.5],
+	["regola6", "P", ["+wA", "-wA", "-w+1A", "+w+1A" ,"+1A", "-w+2A", "+w+2A"], ["PP"], 80.0],
+	["regola4", "PA", ["+wA", "-wA"], ["PE"], 50.0],
+	["regola5", "AP", ["+wA", "-wA"], ["eP"], 50.0],
 ] 
 
 var lettere_to_texture ={
