@@ -113,14 +113,16 @@ func sostituisci_in_indice(sostituzione: String, indice: int) -> String:
 	return prima_dell_indice + risultato + dopo_l_indice
 
 func verifica_cond(cond, trigger_index := 0)-> bool:
+	cond = cond.replace("w", str(width))
+	cond = cond.replace("h", str(height))
 	var num = ""
 	if cond[0] == "+":
-		cond = cond.left(1)
+		cond = cond.right(-1)
 	
 	#ritorna num
 	while cond[0].is_valid_int() or cond[0] == "-":
 		num += cond[0] 
-		cond = cond.right(cond.length()-(1))
+		cond = cond.right(-1)
 	num = num.to_int()
 	var index = trigger_index + num
 	if index >= 0 and index < (stringa.length() - cond.length()):
