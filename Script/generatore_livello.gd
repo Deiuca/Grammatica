@@ -37,22 +37,22 @@ func str_to_grid():
 
 func applica_regole():
 	for regola in Regole.regole:
-		if randomGenerator.randf_range(0.0, 100.0) <= regola[4]:
-			var indxTrigger = trova_in_str(regola[1])
-			while indxTrigger != -1:
-				var daSostituire = true
-				#Cond aggiuntive
-				for cond in regola[2]:
-					daSostituire = daSostituire and verifica_cond(cond, indxTrigger)
+		var indxTrigger = trova_in_str(regola[1])
+		while indxTrigger != -1:
+			var daSostituire = true
+			#Cond aggiuntive
+			for cond in regola[2]:
+				daSostituire = daSostituire and verifica_cond(cond, indxTrigger)
 				
-				var correzione_indice = 0
-				if daSostituire:
+			var correzione_indice = 0
+			if daSostituire:
+				if randomGenerator.randf_range(0.0, 100.0) <= regola[4]:
 					correzione_indice = applica_sostituzioni(regola[3], indxTrigger)
 				
-				indxTrigger = trova_in_str(regola[1], indxTrigger+1+correzione_indice)
+			indxTrigger = trova_in_str(regola[1], indxTrigger+1+correzione_indice)
 				
-				if stringa.length() >= width*height:
-					return
+			if stringa.length() >= width*height:
+				return
 
 func inizializza_griglia():
 	
