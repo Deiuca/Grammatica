@@ -26,6 +26,8 @@ func _ready():
 			else:
 				stringa += "T"
 
+	print(stringa)
+
 	applica_regole()
 	#applica_regole()
 	print(stringa.length())
@@ -54,8 +56,8 @@ func str_to_grid():
 			var texture = Regole.lettere_to_texture[stringa[c]]
 			celle[c].texture = texture
 
-func applica_regole():
-	for regola in Regole.regole:
+func applica_regole(regole_set = Regole.regole):
+	for regola in regole_set:
 		var indxTrigger = trova_in_str(regola[1])
 		while indxTrigger != -1:
 			var daSostituire = true
@@ -143,7 +145,7 @@ func verifica_cond(cond, trigger_index := 0)-> bool:
 		var subDaControllare = stringa.substr(index, cond.length())
 		var compatibile = true
 		for c in range(subDaControllare.length()):
-			compatibile = compatibile and subDaControllare[c] == cond[c] or cond[c] == "*"
+			compatibile = compatibile and (subDaControllare[c] == cond[c] or cond[c] == "*")
 		return compatibile
 	return false
 
