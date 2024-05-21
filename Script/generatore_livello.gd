@@ -26,11 +26,8 @@ func _ready():
 			else:
 				stringa += "T"
 
-	var c = 0
-	while c < 1:
-		applica_regole()
-		c+=1
-		
+	applica_regole()
+	#applica_regole()
 	print(stringa.length())
 	str_to_grid()
 	print(stringa)
@@ -97,7 +94,8 @@ func applica_sostituzioni(sostituzioni : Array, trigger_index := 0):
 		sost = sost.replace("h", str(height))
 		var num = ""
 		if sost[0] == "+":
-			sost = sost.left(1)	
+			sost = sost.right(-1)	
+		
 		#ritorna num
 		while sost[0].is_valid_int() or sost[0] == "-" or sost[0] == "+":
 			num += sost[0] 
@@ -138,7 +136,10 @@ func verifica_cond(cond, trigger_index := 0)-> bool:
 		cond = cond.right(-1)
 	num = calcola_str(num) if num != "" else 0
 	var index = trigger_index + num
+	
 	if index >= 0 and index < (stringa.length() - cond.length()):
+		while floori((index / width)) != floori((index+cond.length()-1) / width):
+			return false
 		var subDaControllare = stringa.substr(index, cond.length())
 		var compatibile = true
 		for c in range(subDaControllare.length()):
@@ -147,7 +148,9 @@ func verifica_cond(cond, trigger_index := 0)-> bool:
 	return false
 
 func trova_in_str(daTrovare, offset = 0) -> int : 
-	for i in range(offset, stringa.length(), daTrovare.length()):
+	for i in range(offset, stringa.length()):
+		if i / width != (i+daTrovare.length()-1)/20:
+			continue
 		var subCorrente = stringa.substr(i, daTrovare.length())
 		var trovata = true
 		for s in range(subCorrente.length()):
