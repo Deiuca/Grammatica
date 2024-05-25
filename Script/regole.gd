@@ -28,19 +28,19 @@ var regole = [
 	["regola6", "A", ["-we", "+wP", "+1A"], ["V"], 90.0],
 	["r", "P", ["-wV"], ["O"], 70.0],
 	["regola6", "A", ["-wo", "+wA"], ["V"], 100.0],
+	["sostituzione S", "S", [], ["P"], 100.0]
 ] 
 
 var lettere_to_texture ={
-	"A": preload("res://Textures/trasparente.png"),
-	"T": preload("res://Textures/nero.png"),
-	"P": preload("res://Textures/piattaforma.png"),
-	"E": preload("res://Textures/Edge_Sx.png"),
+	"A" : preload("res://Textures/trasparente.png"),
+	"T" : preload("res://Textures/nero.png"),
+	"P" : preload("res://Textures/piattaforma.png"),
+	"E" : preload("res://Textures/Edge_Sx.png"),
 	"e" :preload("res://Textures/Edge_Dx.png"),
 	"R" : preload("res://Textures/muro_ramp.png"),
 	"r" : preload("res://Textures/muro_rampa_up.png"),
 	"V" : preload("res://Textures/verticale.png"),
 	"O" : preload("res://Textures/piattaforma_ostacolo.png"),
 	"o" : preload("res://Textures/piattaforma_ostacolo_down.png"),
-	"S" : preload("res://Textures/piattaforma.png"),
 	"N" : preload("res://Textures/nemico.png"),
 }
