@@ -19,21 +19,47 @@ func _ready():
 	
 	inizializza_griglia()
 	
+	var room_obbligatoria = false
+	
+	var array_per_random = []
+	# Creiamo un array con numeri da 1 a x
+	for i in range(1, 100 + 1):
+		array_per_random.append(i)
+	array_per_random = mescola_array(array_per_random)
+	
 	for h in height:
 		for w in width:
 			if h != height-1:
-				stringa += "A"
+				if not room_obbligatoria and  stringa.length() > 0 and array_per_random[0] == 2:
+					stringa[stringa.length() -1] = "e"
+					stringa += "S"
+					room_obbligatoria = true
+				else:
+					stringa += "A"
+					if array_per_random.size() > 0:
+						array_per_random.pop_front()
 			else:
 				stringa += "T"
 
 	print(stringa)
 
 	applica_regole()
-	#applica_regole()
 	print(stringa.length())
 	str_to_grid()
 	print(stringa)
 	
+func mescola_array(arr):
+	randomGenerator.randomize()
+
+	# Implementazione dello shuffle usando l'algoritmo di Fisher-Yates
+	for i in range(arr.size() - 1, 0, -1):
+		var j = randomGenerator.randi_range(0, i)
+		var temp = arr[i]
+		arr[i] = arr[j]
+		arr[j] = temp
+
+	return arr
+
 
 func calcola_str(espressione: String) -> int:
 	var risultato = 0
@@ -99,7 +125,7 @@ func applica_sostituzioni(sostituzioni : Array, trigger_index := 0):
 			sost = sost.right(-1)	
 		
 		#ritorna num
-		while sost[0].is_valid_int() or sost[0] == "-" or sost[0] == "+":
+		while sost[0].is_valid_int() or sost[0] in "+-()[]{}/*.":
 			num += sost[0] 
 			sost = sost.right(sost.length()-(1))
 		num = calcola_str(num) if num != "" else 0
@@ -120,7 +146,7 @@ func sostituisci_in_indice(sostituzione: String, indice: int):
 	var i = 0
 	
 	while i < sostituzione.length():
-		if sostituzione[i] != "*":
+		if sostituzione[i] != "#":
 			stringa[indice + i] = sostituzione[i]
 		i += 1
 
@@ -133,7 +159,7 @@ func verifica_cond(cond, trigger_index := 0)-> bool:
 		cond = cond.right(-1)
 	
 	#ritorna num
-	while cond[0].is_valid_int() or cond[0] == "-" or cond[0] == "+":
+	while cond[0].is_valid_int() or cond[0] in "+-()[]{}/*.":
 		num += cond[0] 
 		cond = cond.right(-1)
 	num = calcola_str(num) if num != "" else 0
@@ -145,18 +171,18 @@ func verifica_cond(cond, trigger_index := 0)-> bool:
 		var subDaControllare = stringa.substr(index, cond.length())
 		var compatibile = true
 		for c in range(subDaControllare.length()):
-			compatibile = compatibile and (subDaControllare[c] == cond[c] or cond[c] == "*")
+			compatibile = compatibile and (subDaControllare[c] == cond[c] or cond[c] == "#")
 		return compatibile
 	return false
 
 func trova_in_str(daTrovare, offset = 0) -> int : 
 	for i in range(offset, stringa.length()):
-		if i / width != (i+daTrovare.length()-1)/20:
+		if i / width != (i+daTrovare.length()-1)/width:
 			continue
 		var subCorrente = stringa.substr(i, daTrovare.length())
 		var trovata = true
 		for s in range(subCorrente.length()):
-			trovata = trovata and (subCorrente[s] == daTrovare[s] or daTrovare[s] == "*")
+			trovata = trovata and (subCorrente[s] == daTrovare[s] or daTrovare[s] == "#")
 		if trovata:
 			return i
 	return -1
