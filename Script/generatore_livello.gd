@@ -15,7 +15,7 @@ var stringa = ""
 func _ready():
 	
 	self.randomGenerator.set_seed(self.generator_seed)
-	print(generator_seed)
+	#print(generator_seed)
 	
 	inizializza_griglia()
 	
@@ -27,6 +27,7 @@ func _ready():
 		array_per_random.append(i)
 	array_per_random = mescola_array(array_per_random)
 	
+	#Inizializza griglia & posiziona a random una room
 	for h in height:
 		for w in width:
 			if h != height-1:
@@ -40,13 +41,11 @@ func _ready():
 						array_per_random.pop_front()
 			else:
 				stringa += "T"
-
-	print(stringa)
-
+	
+	#Algoritmo di gramamtica
 	applica_regole()
-	print(stringa.length())
+	#Stringa to griglia
 	str_to_grid()
-	print(stringa)
 	
 func mescola_array(arr):
 	randomGenerator.randomize()
@@ -66,7 +65,6 @@ func calcola_str(espressione: String) -> int:
 	var expr = Expression.new()
 	var error = expr.parse(espressione)
 	if error != OK:
-		print("Errore di parsing: ", error)
 		return risultato
 	else:
 		risultato = expr.execute()
@@ -104,6 +102,7 @@ func inizializza_griglia():
 	var windows_size = get_viewport().size 
 	var cell_scale = Vector2((windows_size.x/texture_size.x)/self.width, (windows_size.y/texture_size.y)/self.height)
 	
+	#Inizializza le celle di una griglia e la scala in base alla dimensione della finestra
 	for h in height:
 		for w in width:
 			var cella = preload("res://cella.tscn").instantiate()
@@ -124,7 +123,6 @@ func applica_sostituzioni(sostituzioni : Array, trigger_index := 0):
 		if sost[0] == "+":
 			sost = sost.right(-1)	
 		
-		#ritorna num
 		while sost[0].is_valid_int() or sost[0] in "+-()[]{}/*.":
 			num += sost[0] 
 			sost = sost.right(sost.length()-(1))
